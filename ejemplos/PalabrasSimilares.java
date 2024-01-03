@@ -5,9 +5,8 @@ import java.util.stream.*;
 
 public class PalabrasSimilares {
 
-    private static final int DISTANCIA_MAXIMA_PERMITIDA = 2;
-    private static final int MAXIMO_DE_PALABRAS_A_DEVOLVER = 10;
-    
+    private static final int DISTANCIA_MAXIMA_PERMITIDA      = 2;
+    private static final int MAXIMO_DE_PALABRAS_A_DEVOLVER   = 10;
 
     public static void main(String[] args) {
         final List<String> diccionario = getPalabrasDelDiccionario();
@@ -39,7 +38,7 @@ public class PalabrasSimilares {
             return Files.readString(Path.of("diccionario.ES.txt"))
                  .lines()
                  .filter( linea -> ! linea.isBlank()) // ME quedo con la linea si tiene algo
-                 .filter( linea -> linea.contains("=")) // Me quedo con la linea si no empieza por #
+                 .filter( linea -> linea.contains("=")) // Me quedo con la linea si contiene un =
                  .map(    linea -> linea.split("=")[0].toLowerCase())
                  .toList();
         }catch(IOException io){

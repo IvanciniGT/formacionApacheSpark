@@ -353,3 +353,148 @@ private static class PalabraPuntuada {
 
 archoplelagu
 archipielago
+
+---
+
+JAVA es un lenguaje con una cantidad enorme de CAGADAS en su sintaxis.
+JAVA es un lenguaje que está prácticamente muerto!
+En los albores de los 2000, todo el mundo quería aprender JAVA... y todo el mundo quería programar en JAVA.
+Y todas las aplicaciones se hacían en JAVA.
+- App web => JAVA
+- App Android => JAVA
+- App Escritorio => JAVA (Swing)
+- App software embedded => JAVA (J2ME)
+
+La realidad 20 años después es que:
+- App web => 
+    - Frontend => JS
+    - Backend => JAVA (Spring -> Kotlin)
+- App Android => Kotlin
+    En kotlin generamos ficheros .kt que se compilan a ficheros .class -> Que corren en una máquina virtual JAVA.
+    Es una alterativa a escribir con sintaxis JAVA... para generar lo mismo que generamos desde JAVA: ByteCode
+- App Bigdata => Scala
+    Scala es un lenguaje que se compila a ByteCode... y que corre en una máquina virtual JAVA.
+    Es una alterativa a escribir con sintaxis JAVA... para generar lo mismo que generamos desde JAVA: ByteCode 
+- App Escritorio => C#, VB, C++, Objective C
+- App software embedded => Python, C, Go, Rust
+
+Los getters y los setters no sirven para encapsular código.
+
+```java
+    private static class PalabraPuntuada {
+        public String palabra;
+        public int puntuacion;
+    
+        public PalabraPuntuada(String palabra, int puntuacion) {
+            this.palabra = palabra;
+            this.puntuacion = puntuacion;
+        }
+    } // Escribo este código el día 1
+
+    // Del día 2 al 100, tengo montonones de personas en la empresa usando mi clase... y escribiendo código como éste: vvvvv
+    ....
+    var pp1 = new PalabraPuntuada("hola", 1);
+    pp1.palabra = "adios";
+    pp1.puntuacion = 2;
+    System.out.println(pp1.palabra);
+    System.out.println(pp1.puntuacion);
+
+    // El día 101, se me ocurre la brillante idea de querer meter una comprobación en la puntuación (No se admiten valores inferiores a 0) = Tengo a montonones de personas buscandome con un kalashnikov en la mano....
+    // Y la cagada es que java no permite hacer éste cambio sin alterar la forma en la que se usa el código... cosa que
+    // Permiten el resto de lenguajes de programación del mundo: C#, Py, JS (PROPERTY)
+
+    // Los getter y los setter son la mierda-solución que hay en JAVA por no disponer del concepto de PROPERTY para facilitar la mantenibilidad del código. PUNTO PELOTA ! QUE NO OS ENGAÑEN !
+
+```    
+
+```java
+    private static class PalabraPuntuada {
+        private String palabra;
+        private int puntuacion;
+        public PalabraPuntuada(String palabra, int puntuacion) {
+            setPalabra(palabra);
+            setPuntuacion(puntuacion);
+        }
+        public String getPalabra() {
+            return palabra;
+        }
+        public void setPalabra(String palabra) {
+            this.palabra = palabra;
+        }
+        public int getPuntuacion() {
+            return puntuacion;
+        }
+        public void setPuntuacion(int puntuacion) {
+          if (puntuacion < 0) {
+            throw new IllegalArgumentException("La puntuación no puede ser negativa");
+          }
+          this.puntuacion = puntuacion;
+        }
+    }
+
+    ....
+    var pp1 = new PalabraPuntuada("hola", 1);
+    pp1.setPalabra("adios");
+    pp1.setPuntuacion(2);
+    System.out.println(pp1.getPalabra());
+    System.out.println(pp1.getPuntuacion());
+
+```    
+
+---
+
+# Montar el sistema de trending topics del antaño Twitter, hoy en día X.
+
+- Tengo un montón de mensajes que me llegan de un montón de usuarios.
+- Y dentro de ellos aparecen hashtags.... identificados por una almohadilla (#) seguida de una palabra:
+    En la playa con mis amigos #summerLove#goodVibes
+    En navidades estudiando #mierdaDeNavidad#odioLaNavidad #odioElTurrón#odioMiVida. PD: No me gusta el turrón.
+  
+  Quiero saber cuáles son los hashtags más usados en los últimos 60 minutos.
+
+App X en el teléfono -> nuevo Tweet -> Servidor
+- Publicarlo en mi muro
+- Identificar las menciones @ -> Notificar a los usuarios mencionados
+- Identificar los hashtags # -> Notificar a los usuarios que siguen esos hashtags, calcular trending topics
+- Foto -> IA -> Identificar personas en la foto
+- Filtro (IA) identificar si el contenido es inapropiado
+
+
+
+App teléfono
+  tweet ----> Servidor de mensajería (Kafka) <----- Publicación
+                                             <----- Identificar menciones ---> Se guardan en otra cola <--- Notifique
+                                             <----- Identificar hashtags  ---> Se guardan en otra cola <--- Calcular trending topics
+
+Partimos de un fichero lleno de tweets.
+Cada linea será un tweet.
+Y queremos procesarlo para obtener los trending topics.
+
+```txt
+En la playa con mis amigos #summerLove#goodVibes
+En navidades estudiando #mierdaDeNavidad#odioLaNavidad #odioElTurrón#odioMiVida. PD: No me gusta el turrón.
+En la bolera con los primos #familyTime#bowling#goodvibes
+```
+
+summerLove  10
+goodVibes   57
+mierdaDeNavidad <<< ELIMINADO por contener la palabra mierda... que todo el mundo sabe que si la escuchas se te explota el cerebro
+odioLaNavidad  5
+---
+goodVibes   57
+summerLove  10
+---
+Palabras prohibidas: caca, culo, pedo, pis, mierda
+
+---
+2 Fases:
+- Extraer los hashtags de los tweets  <--- para esto no hace falta nada que no os haya contado ya
+- Contar los hashtags                 <--- reduceByKey (es una funcion de tipo map)
+
+    #goodVives
+    #goodVibes
+    #cacaDeVerano
+
+
+    #goodVibes, [#goodVibes, #goodVibes]
+    #cacaDeVerano, [#cacaDeVerano]

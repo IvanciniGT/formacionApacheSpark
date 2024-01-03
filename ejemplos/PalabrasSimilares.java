@@ -1,5 +1,5 @@
-package ejemplos;
-
+import java.io.IOException;
+import java.nio.file.*;
 import java.util.*;
 import java.util.stream.*;
 
@@ -19,20 +19,35 @@ public class PalabrasSimilares {
         List<String> palabrasSimilares = diccionario//.stream() // Para cada palabra
                                                     //.parallel()
                                                     .parallelStream()
-                                                    .filter(  palabra -> Math.abs(palabra.length() - palabraObjetivo.length()) <= DISTANCIA_MAXIMA_PERMITIDA) // Me quedo con palabras de similar longitud
-                                                    .map(     palabra -> new PalabraPuntuada(palabra, distanciaLevenshtein(palabra, palabraObjetivo))) // Calculo la distancia de Levenshtein   
-                                                    .filter(  palabraPuntuada -> palabraPuntuada.puntuacion <= DISTANCIA_MAXIMA_PERMITIDA) // Me quedo con las palabras similares a la objetivo
-                                                    .sorted(  Comparator.comparing(palabraPuntuada -> palabraPuntuada.puntuacion) ) // Ordeno por distancia
-                                                    .limit(   MAXIMO_DE_PALABRAS_A_DEVOLVER )
-                                                    .map(     palabraPuntuada -> palabraPuntuada.palabra )
-                                                    .collect( Collectors.toList() );
+                                                    .filter(  palabra -> Math.abs(palabra.length() - palabraObjetivo.length()) <= DISTANCIA_MAXIMA_PERMITIDA)   // Me quedo con palabras de similar longitud
+                                                    .map(     palabra -> new PalabraPuntuada(palabra, distanciaLevenshtein(palabra, palabraObjetivo)))          // Calculo la distancia de Levenshtein   
+                                                    .filter(  palabraPuntuada -> palabraPuntuada.puntuacion <= DISTANCIA_MAXIMA_PERMITIDA)                      // Me quedo con las palabras similares a la objetivo
+                                                    .sorted(  Comparator.comparing(palabraPuntuada -> palabraPuntuada.puntuacion) )                             // Ordeno por distancia
+                                                    .limit(   MAXIMO_DE_PALABRAS_A_DEVOLVER )                                                                   // Corto por las N más similares
+                                                    .map(     palabraPuntuada -> palabraPuntuada.palabra )                                                      // Descarto la puntuación
+                                                    .collect( Collectors.toList() );                                                                            // Recojo en una lista
 
         System.out.println("Palabras similares a: "+ palabraObjetivo);
         palabrasSimilares.forEach(System.out::println);
     }
 
     private static List<String> getPalabrasDelDiccionario() {
-        return List.of("manzana", "manzano", "mañana", "melocotón");
+        //return List.of("manzana", "manzano", "mañana", "melocotón");
+        // En Java 11, dentro de la clase Files, añadireon POR FIN!!!, ALELUYA!!!, 
+        // un método que nos permite leer un fichero de texto
+        try{
+            return Files.readString(Path.of("diccionario.ES.txt"))
+                 .lines()
+                 .filter( linea -> ! linea.isBlank()) // ME quedo con la linea si tiene algo
+                 .filter( linea -> linea.contains("=")) // Me quedo con la linea si no empieza por #
+                 .map(    linea -> linea.split("=")[0].toLowerCase())
+                 .toList();
+        }catch(IOException io){
+            System.out.println("Error al leer el fichero");
+            io.printStackTrace();
+            System.exit(1);
+        }
+        return null;
     }
 
     private static class PalabraPuntuada {

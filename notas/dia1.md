@@ -248,8 +248,11 @@ Ejemplos de funciones tipo map:
 
       Usamos MUCHISIMO la función MAP. Nos permite transformar datos, aplicándoles una función de transformación.
 
-- filter
 - flatMap
+  Un flatmap es:
+    - Un map
+    - Seguido de un flatten
+- filter
 - sorted
 
 ## Funciones tipo REDUCE

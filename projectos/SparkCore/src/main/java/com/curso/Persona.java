@@ -36,19 +36,33 @@ public class Persona {
     private static final String LETRAS_DNI = "TRWAGMYFPDXBNJZSQVHLCKE";
 
     private void validarDni(String dni){
-        // Debe validar el dni
-        // Y rellenar las variables:
-        // - numeroDni
-        // - letraDni
-        // - dniValido
+        dni = dni.toUpperCase();
+        this.dniValido = dni.matches("^(([0-9]{1,8})|((([0-9]{1,2}[.][0-9]{3})|([0-9]{1,3}))[.][0-9]{3}))[ -]?[A-Z]$");
+        if(dniValido) {
+            dni = dni.replaceAll("[. -]","");
+            this.numeroDni = Integer.parseInt(dni.substring(0, dni.length() - 1));
+            this.letraDni = dni.substring(dni.length() - 1);
+            this.dniValido = LETRAS_DNI.charAt(numeroDni % 23) == letraDni.charAt(0);
+        }
     }
 
     public Optional<String> normalizarDni(boolean puntosDeMiles, boolean cerosIzquierda, String separadorLetra){
         if(!dniValido){
             return Optional.empty();
         }
-        String dniNormalizado = "";
+        String dniNormalizado = (separadorLetra == null ? "" : separadorLetra) + letraDni;
+        String numeroDNINormalizado = ""+numeroDni;
+        if(cerosIzquierda){
+            numeroDNINormalizado = ("00000000" + numeroDNINormalizado).substring(numeroDNINormalizado.length());
+        }
+        if(puntosDeMiles){
+            int posicion = numeroDNINormalizado.length() - 3;
+            while(posicion > 0){
+                numeroDNINormalizado = numeroDNINormalizado.substring(0, posicion) + "." + numeroDNINormalizado.substring(posicion);
+                posicion -= 3;
+            }
+        }
         // Aqui haré la normalización
-        return Optional.of(dniNormalizado);
+        return Optional.of(numeroDNINormalizado + dniNormalizado);
     }
 }

@@ -282,13 +282,13 @@ La letra es una huella del número (un algoritmo de tipo HASH)
            A este DNI, por tener resto 1 le corresponde la letra R
 
     Qué es un formato correcto?
-         23.000.000-T
-         23000000T
-         02300000T
-          2300000t
-          2300000 T
-         23.000000-T      NO
-         23000000$T       NO
+        23.000.000-T
+        23000000T
+        02300000T
+        2300000t
+        2300000 T
+        23.000000-T      NO
+        23000000$T       NO
     Uno de los grandes problemas en el banco, es que estamos continuamente recibiendo ficheros 
     cargados de DNIs de distintos proveedores... y cada uno lo envía en un formato distinto.
 

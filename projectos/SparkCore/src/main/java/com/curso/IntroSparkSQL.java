@@ -68,19 +68,22 @@ public class IntroSparkSQL {
 
         // Pasar de un Dataset<Rows> a un JavaRDD<Persona>
         JavaRDD<Persona> personasRDD = datos.toJavaRDD() // JavaRDD<Row>
-                .map( row -> Persona.builder()
-                        .nombre(row.getString(row.fieldIndex("nombre")))
-                        .apellidos(row.getString(row.fieldIndex("apellidos")))
-                        .edad(row.getLong(row.fieldIndex("edad")))
-                        .cp(row.getString(row.fieldIndex("cp")))
-                        .email(row.getString(row.fieldIndex("email")))
-                        .dni(row.getString(row.fieldIndex("dni")))
-                        .build()
+                .map( row -> new Persona(
+                        row.getString(row.fieldIndex("nombre")),
+                        row.getString(row.fieldIndex("apellidos")),
+                        row.getLong(row.fieldIndex("edad")),
+                        row.getString(row.fieldIndex("cp")),
+                        row.getString(row.fieldIndex("email")),
+                        row.getString(row.fieldIndex("dni")))
                 );
-        JavaRDD<Persona> filtradas = personasRDD.filter(persona -> persona.getEdad() > 30);
+        JavaRDD<Persona> dnisValidos = personasRDD.filter(Persona::isDniValido);
+        dnisValidos = dnisValidos.map( persona -> {
+            persona.setDni(persona.normalizarDni(true, true, "-").orElseThrow());
+            return persona;
+        });
 
         // Pasar de un JavaRDD<Persona> a un Dataset<Row>
-        Dataset<Row> filtradasComoDataset = conexion.createDataFrame(filtradas, Persona.class);
+        Dataset<Row> filtradasComoDataset = conexion.createDataFrame(dnisValidos, Persona.class);
         filtradasComoDataset.show();
 
         // Hay operaciones que me va a interasr hacerlas sobre un Dataset<Row> y otras sobre un JavaRDD<Persona>

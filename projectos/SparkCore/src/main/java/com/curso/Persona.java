@@ -7,25 +7,26 @@ import java.util.Optional;
 
 @EqualsAndHashCode
 @ToString
-@AllArgsConstructor
+@Getter
 @NoArgsConstructor
-@Builder
 public class Persona {
-    @Getter @Setter private String nombre;
-    @Getter @Setter private String apellidos;
-    @Getter @Setter private long edad;
-    @Getter @Setter private String cp;
-    @Getter @Setter private String email;
-    @Getter private String dni;
+    @Setter private String nombre;
+    @Setter private String apellidos;
+    @Setter private long edad;
+    @Setter private String cp;
+    @Setter private String email;
+    private String dni;
     private Integer numeroDni;
     private String letraDni;
     private boolean dniValido;
 
-    public Optional<Integer> getNumeroDni(){
-        return Optional.ofNullable(numeroDni);
-    }
-    public Optional<String> getLetraDni(){
-        return Optional.ofNullable(letraDni);
+    public Persona(String nombre, String apellidos, long edad, String cp, String email, String dni) {
+        setNombre(nombre);
+        setApellidos(apellidos);
+        setEdad(edad);
+        setCp(cp);
+        setEmail(email);
+        setDni(dni);
     }
 
     public void setDni(String dni){
@@ -50,7 +51,6 @@ public class Persona {
         if(!dniValido){
             return Optional.empty();
         }
-        String dniNormalizado = (separadorLetra == null ? "" : separadorLetra) + letraDni;
         String numeroDNINormalizado = ""+numeroDni;
         if(cerosIzquierda){
             numeroDNINormalizado = ("00000000" + numeroDNINormalizado).substring(numeroDNINormalizado.length());
@@ -63,6 +63,6 @@ public class Persona {
             }
         }
         // Aqui haré la normalización
-        return Optional.of(numeroDNINormalizado + dniNormalizado);
+        return Optional.of(numeroDNINormalizado + (separadorLetra == null ? "" : separadorLetra) + letraDni);
     }
 }

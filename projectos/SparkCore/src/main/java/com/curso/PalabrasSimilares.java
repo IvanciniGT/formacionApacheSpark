@@ -6,6 +6,8 @@ import org.apache.spark.api.java.JavaSparkContext;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Comparator;
@@ -58,7 +60,12 @@ public class PalabrasSimilares {
         // En Java 11, dentro de la clase Files, añadireon POR FIN!!!, ALELUYA!!!,
         // un método que nos permite leer un fichero de texto
         try{
-            return Files.readString(Path.of("/Users/ivan/Desktop/formaciones/apacheSpark/projectos/SparkCore/src/main/resources/diccionario.ES.txt"))
+            URL recurso=PalabrasSimilares.class.getClassLoader().getResource("diccionario.ES.txt");
+            if(recurso == null) {
+                System.out.println("Diccionario no encontrado");
+                System.exit(1);
+            }
+            return Files.readString(Path.of(recurso.toURI()))
                     .lines()
                     .filter( linea -> ! linea.isBlank()) // ME quedo con la linea si tiene algo
                     .filter( linea -> linea.contains("=")) // Me quedo con la linea si contiene un =
@@ -68,6 +75,8 @@ public class PalabrasSimilares {
             System.out.println("Error al leer el fichero");
             io.printStackTrace();
             System.exit(1);
+        } catch (URISyntaxException e) {
+            throw new RuntimeException(e);
         }
         return null;
     }

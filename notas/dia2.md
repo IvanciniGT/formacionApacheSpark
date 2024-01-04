@@ -226,3 +226,82 @@ Pero trabaja diferente a Spark. En Apache Storm lo que repartimos entre los nodo
 
     Nodo1           Nodo2           Nodo3               Nodo4               Nodo5
     1-300M  map1->  1-300M  map2->   1-300M  filter->   1-300M  map3->     1-300M  reduce->
+
+---
+
+# Apache Spark SQL
+
+Es una librería alternativa a SparkCore, que nos permite trabajar de una forma más sencilla con datos ESTRUCTURADOS.
+
+Lo cierto es que a día de hoy el 90% del trabajo que se hace en Spark es con la librería SQL.
+
+Si usamos la librería SQL, usamos la librería SQL y nos olvidamos de la librería CORE.
+Podemos pasar datos de una a la otra.. lo cuál no siempre es directo.
+
+Incluso la forma de conectarnos al cluster cambia en la librería SQL.
+
+---
+
+En la práctica, tendré un archivo más o menos grande guardado en:
+- Un sitio externo al cluster de Spark
+  - Lo tengo que leer de golpe... en un nodo... y luego repartirlo entre los nodos trabajadores
+- Dentro del cluster en HDFS
+  - El archivo estará particionado... y cada partición almacenada en un nodo del cluster
+  - Al leerlo, puedo leer cada partición de forma independiente en cada nodo,
+    procesar los datos de esa partición en ese nodo (evitando que se manden por la red)
+    y al acabar en cada nodo: 
+        - mandar el resultado a un nodo que consolide la información 
+        - volver a guardar el resultado en un nuevo archivo particionado... para en el futuro poder volver a leerlo de forma distribuida... y aplicarle otras transformaciones.
+
+Nunca vamos a trabajar con rutas locales en los programas Spark.
+Esos programas se ejecutan simultáneamente en todos los nodos del cluster.
+Y en cada nodo se tomaría una ruta local diferente.
+
+Lo que trabajamos son con rutas disponibles en red, que todos los nodos del cluster pueden ver.
+Habitualmente exportadas mediante HDFS.
+    NO TENDREMOS:
+        /home/usuario/Documentos/...
+        c:\misDocumentos\...
+    TENDREMOS:
+        hdfs://almacenamiento/usuario/Documentos/...
+
+---
+
+DNIs nacionales... no NIEs ni pasaportes, ni CIF
+1-8 números y 1 letra
+Qué ocurre con la letra? está al final... y es mayúscula
+La letra es una huella del número (un algoritmo de tipo HASH)
+
+    23000001 | 23
+            ------------
+           1   1000000
+           ^
+           ^ Este es el dato que me interesa. Entre qué valores está? 0-22
+           23 valores diferentes puede tomar... entre 0 y 22
+
+           A este DNI, por tener resto 1 le corresponde la letra R
+
+    Qué es un formato correcto?
+         23.000.000-T
+         23000000T
+         02300000T
+          2300000t
+          2300000 T
+         23.000000-T      NO
+         23000000$T       NO
+    Uno de los grandes problemas en el banco, es que estamos continuamente recibiendo ficheros 
+    cargados de DNIs de distintos proveedores... y cada uno lo envía en un formato distinto.
+
+Queremos hacer un programa Spark que:
+- Lea unas personas de un fichero: JSON, CSV... lo que sea
+- Valide que el DNI es correcto
+- Y lo deje en un determinado formato de mi interés (normalizarlo)
+  - ceros delante
+  - usar puntos
+  - usar separador
+Guardar los datos en un fichero... con el formato adecuado... y solo de aquellos registros que tengan un DNI válido
+Los datos que vengan con un DNI inválido, los quiero en otro fichero.
+
+    ^^^^
+
+ESCENARIO TIPICO DE USO DE SPARK EN EL BANCO

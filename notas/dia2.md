@@ -305,3 +305,44 @@ Los datos que vengan con un DNI inválido, los quiero en otro fichero.
     ^^^^
 
 ESCENARIO TIPICO DE USO DE SPARK EN EL BANCO
+---
+
+Qué formato elegiríais para guardar el DNI en una BBDD o en un fichero?
+    "23000000T"
+    "23000000-T"
+    "23000000 T"
+    "23.000.000T"
+    "23000000 t"
+    "23000"
+
+    23000000 EL NUMERO Y COMO NUMERO.
+    Caso que guarde también dnis inválidos: LA LETRA EN UN CAMPO DE TEXTO APARTE
+
+
+    Cuánto ocupa un DNI en BBDD como texto? 
+        Cada carácter en una BBDD ocupa a razón del juego de caracteres que usemos.
+        Un estandar a día de hoy es UTF-8, donde cada caracter ocupa entre 1 y 4 bytes.
+        Los caracteres básicos (ASCII) ocupan 1 byte.
+        Los caracteres acentuados ocupan 2 bytes.
+        Los caracteres asiáticos, emojis, cirílicos, etc... ocupan 4 bytes.
+
+        En el DNI usamos caracteres muy básicos: 8 para el numero + letra = 9 caracteres = 9 bytes
+
+    En 1 bytes cuantos números puedo guardar? 256
+    En 2 bytes? 65536
+    En 3 bytes? 16777216
+    En4 bytes? 4294967296
+
+    Como número, el DNI ocupa un 45% menos que como texto.
+    Si tengo 10M de DNIs... y los guardo como texto... ocupo 90M de espacio en disco.
+    Si los guardo como número... ocupo 45M de espacio en disco.
+    Lo que implica que :
+        - Necesitaré mucho menos espacio en disco para guardar los datos... QUE EN ENTORNOS DE PRODUCCIÓN ES UNA PASTA
+        - Necesitaré el doble de tiempo para leer los datos... 
+        - Necesitaré el doble de tiempo para escribir los datos...
+        - Necesitaré el doble de tiempo para trasmitir los datos por red...
+    Mi programa va a ir lento de cojones!
+
+    De hecho, éste es el motivo por el que en entornos BIGDATA no usamos ficheros CSV, JSON, TXT
+    sino archivos AVRO o PARQUET 
+

@@ -82,6 +82,8 @@ public class IntroSparkSQL {
             return persona;
         });
 
+        // Aplicar el filtro sobre un Dataset<Row>
+
         // Pasar de un JavaRDD<Persona> a un Dataset<Row>
         Dataset<Row> filtradasComoDataset = conexion.createDataFrame(dnisValidos, Persona.class);
         filtradasComoDataset.show();

@@ -31,16 +31,7 @@ public class CalcularPI {
         int N = 100*1000*1000;
         // Los RDDs se generan siempre desde la conexión al cluster.
         List<Integer> lanzamientos = List.of(N);
-        JavaRDD<Integer> lanzamientosRDD = conexion.parallelize(lanzamientos);
-
-        /*
-            Coleccion inicial
-                1000   ->  0,1,2,...,999 ->     0                             ----> n= numeroDeDardosDentro
-                                                1
-                                                2
-                                                ...
-                                                999
-         */
+        JavaRDD<Integer> lanzamientosRDD = conexion.parallelize(lanzamientos, 50);
 
         // PASO 3: Aplicar el Map-Reduce
         long n = lanzamientosRDD.flatMap( numeroDeLanzamientos -> IntStream.range(0,N).iterator())

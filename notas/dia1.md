@@ -74,7 +74,7 @@ Es capaz de ejecutar un tipo de programa muy especial (no cualquier programa) us
 
 Hadooop ofrece 3 servicios:
 - YARN: Yet Another Resource Negotiator: Se encarga de controlar/monitorizar los recursos de las máquinas del cluster.
-- HDFS: Hadoop Distributed File System: Sistema de archivos distribuido.
+- HDFS: Hadoop Distributed File System: Sistema de archivos distribuido. Se basa en el standard POSIX
 - MapReduce: Es una forma de diseñar programas para manipular datos de forma altamente paralelizable.
              Apache Hadoop no es el único software que nos permite usar un modelo de programación MAP - REDUCE.
              Lo  tenemos de serie en JAVA (Streams) y en Python (map, filter, reduce, lambda, list comprehension, etc...), y en JS....

@@ -111,3 +111,118 @@ De forma que el resultado de todas las operaciones no se guarde en HDD, sino en 
 
 La propia librería Spark nos ofrece un cluster de spark de pruebas que podemos ejecutar en local en automático.
 Para desarrollo es genial !
+
+# Qué era UNIX®?
+
+Unix era un Sistema Operativo (el que ha sido el SO más influyente del mundo) que se desarrolló en los años 70 en los laboratorios Bell de AT&T.
+
+Ese sistema operativo se licenciaba a grandes compañías, que lo adaptaban a sus necesidades (generando su propia versión) y lo vendían a sus clientes.
+
+En un momento llego a haber más de 200 versiones de Unix.
+Los programas que se montaban para una versión a veces no funcionaban en otras versiones del SO.
+
+Hubo que poner un poco de orden: Y salen 2 estándares para regular cómo debían evolucionar esas versiones de UNIX: 
+- POSIX (Portable Operating System Interface)
+- SUS (Single Unix Specification)
+
+Unix dejo de fabricarse en los años 90.
+
+# Qué es UNIX®?
+
+Hoy en día UNIX son esos 2 estándares (POSIX y SUS) que regulan cómo puede crearse un SO, que quiera ser compatible con estas especificaciones.
+
+Los grandes fabricantes de hardware montan sus propios SO para sus equipos. cumpliendo con los estándares POSIX y SUS.
+
+Oracle: SOLARIS (Unix®)
+IBM:    AIX (Unix®)
+HP:     HP-UX (Unix®)
+Apple:  MacOS (Unix®)
+
+La certificación cuesta un pastizal.
+Hubo gente que intentó montar un SO según las especificaciones de POSIX y SUS, pero sin pagar la certificación, para ofrecerlo de forma gratuita al mundo:
+- BSD (Berkeley Software Distribution): 386-BSD
+    El problema es que se atrevieron a decir que era un UNIX®... y AT&T les metió un puro que casi los mata.
+    Posteriormente, cuando se resolvieron los litigios interpuestos por AT&T, se usó su código para montar nuevos SO: 
+        - FreeBSD
+        - NetBSD
+        - MacOS X
+- GNU (GNU is Not Unix): 
+    El problema es que no terminaron de desarrollarlo nunca. Montarón casi todo lo necesario para tener un SO completo... compiladores, interfaz gráfica (gnome), editores de texto (gedit), chess, etc... pero no terminaron de montar el núcleo del SO.
+- Por ese entonces, encabronado que no hubiera un SO libre cojonudo, sale un hombrecillo llamado Linus Torvalds, que se pone a montar un kernel de SO desde cero, que se llamó Linux (Linus + Unix).
+
+Como os podéis imaginar Linus se unió a la gente de GNU para montar un SO: GNU/Linux (70%, 30%), que se deistribnuye como compendios de software(las distros): RedHat, Debian, Ubuntu, etc...
+
+El SO GNU/Linux se supone que cumple con las especificaciones POSIX y SUS, pero no está certificado.
+
+El kernel Linux es el Kernel de SO más usado del mundo. Mucho más que el de windows (windows NT)
+Hay un SO , que sólo él convierte a Linux en el Kernel de SO más usado del mundo: Android.
+
+---
+
+En el estandar POSIX se define cómo debe ser un sistema de archivos:
+/
+    bin/
+    etc/
+    var/
+    opt/
+    home/
+    tmp/
+
+Además, se definen una serie de utilizades(comandos) que todo SO que quiera cumplir con POSIX debe tener:
+- mkdir
+- cp
+- mv
+- touch
+
+HDFS, Hadoop Distributed File System, es un sistema de archivos distribuido, que cumple con las especificaciones POSIX.
+Y que requiere de un Kernel para su ejecución compatible con POSIX (que tenga los comanditos de antes)
+
+En Windows o montamos el Win_utils... o vamos jodidos para levantas un sistema de archivos HDFS...
+Lo cual tampoco es ninguna limitación, porque en Windows no voy a montar un cluster de Hadoop ni de coña.
+Va a ir peor .. y encima tendré que pagar pasta por licencias.
+Todos los cluster de hadoop van sobre linux... donde no voy a tener ese problema.
+Otra cosa es que para jugar en desarrollo, estemos levantando un cluster de hadoop en local en windows. Pero para eso tenemos el win_utils.
+
+A la hora de trabajar con Spark, a no ser que vayamos a trabajar con el sistema de archivos de hadoop, ésto no me supone ninguna limitación en los entornos de desarrollo. Si quiero trabajar con HDFS entonces si necesito montar el win_utils. Si no... no hay problema.
+
+---
+
+Exception in thread "main" java.lang.IllegalAccessError: class org.apache.spark.storage.StorageUtils$ (in unnamed module @0x6e6f2380) cannot access class sun.nio.ch.DirectBuffer (in module java.base) because module java.base does not export sun.nio.ch to unnamed module @0x6e6f2380
+
+En Java 9, cambia la arquitectura de la máquina virtual de JAVA (JIGSAW).
+La máquina virtual se modulariza. De forma que al levantar una JVM podemos elegir con qué módulos queremos que se levante.
+Adicionalmente, alguno módulos considerados inseguros, se desactivan por defecto.
+
+--add-opens=java.base/java.lang=ALL-UNNAMED 
+--add-opens=java.base/java.lang.invoke=ALL-UNNAMED 
+--add-opens=java.base/java.lang.reflect=ALL-UNNAMED 
+--add-opens=java.base/java.io=ALL-UNNAMED 
+--add-opens=java.base/java.net=ALL-UNNAMED 
+--add-opens=java.base/java.nio=ALL-UNNAMED 
+--add-opens=java.base/java.util=ALL-UNNAMED 
+--add-opens=java.base/java.util.concurrent=ALL-UNNAMED 
+--add-opens=java.base/java.util.concurrent.atomic=ALL-UNNAMED 
+--add-opens=java.base/sun.nio.ch=ALL-UNNAMED 
+--add-opens=java.base/sun.nio.cs=ALL-UNNAMED 
+--add-opens=java.base/sun.security.action=ALL-UNNAMED 
+--add-opens=java.base/sun.util.calendar=ALL-UNNAMED 
+--add-opens=java.security.jgss/sun.security.krb5=ALL-UNNAMED
+
+---
+
+Spark particiona datos... y manda cada una de esas particiones a distintos nodos... para que todos hagan el mismo trabajo sobre las distintas particiones.
+
+    Nodo 1  
+        1-100M          map1 -> map2 -> filter -> map3 -> reduce
+
+    Nodo 2
+        100M-200M       map1 -> map2 -> filter -> map3 -> reduce
+
+    Nodo 3
+        200M-300M       map1 -> map2 -> filter -> map3 -> reduce
+
+Apache Storm es otro framework de Big Data, que se usa para procesar streams de datos en tiempo real.
+Pero trabaja diferente a Spark. En Apache Storm lo que repartimos entre los nodos no son datos, sino operaciones.
+
+    Nodo1           Nodo2           Nodo3               Nodo4               Nodo5
+    1-300M  map1->  1-300M  map2->   1-300M  filter->   1-300M  map3->     1-300M  reduce->

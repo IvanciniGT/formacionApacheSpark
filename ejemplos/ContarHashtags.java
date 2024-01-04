@@ -7,16 +7,18 @@ public class ContarHashtags {
 
     public static void main(String[] args) {
         List<String> tweets = getTweets();
-        tweets
+        var hashtags = tweets
                 .stream()                                                                                                                    // Stream<String>
                 // Separar las palabras/tokens de cada tweet
-                .map( tweet -> tweet.replace("#", " #"))    // Me aseguro que los hashtags quedan separados entre si         Stream<String>
+                .map( tweet -> tweet.replace("#", " #") )   // Me aseguro que los hashtags quedan separados entre si         Stream<String>
                 .map( tweet -> tweet.split("[ .,_;:()?¿!¡<>+@-]+") )     // Separo los tokens de las frases, incluyendo los hashtags      Stream<String[]>
                 .flatMap( Arrays::stream )                                     // Convierto el array de palabras en un Stream de palabras       Stream<Stream<String>>
                 .filter( palabra -> palabra.startsWith("#") )           // Me quedo solo con los hashtags                                Stream<String>
                 .map( String::toLowerCase )                                    // Paso todos los hashtags a minúsculas                          Stream<String>
                 .map( hashtag -> hashtag.substring(1) )             // Elimino el # de cada hashtag                                  Stream<String>
-                .filter( hashtag ->  )                              // Eliminar los hashtags que contengan palabras prohibidas         Stream<String>
+                .filter( hashtag -> getPalabrasProhibidas().stream().noneMatch( hashtag::contains ) );  // Eliminar los hashtags que contengan palabras prohibidas         Stream<String>
+                //.filter( hashtag -> getPalabrasProhibidas().stream().noneMatch( palabraProhibida -> hashtag.contains(palabraProhibida) ) )                              // Eliminar los hashtags que contengan palabras prohibidas         Stream<String>
+        hashtags
                 .forEach( System.out::println );
     }
 

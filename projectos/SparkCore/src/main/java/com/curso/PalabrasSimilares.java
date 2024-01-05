@@ -60,12 +60,15 @@ public class PalabrasSimilares {
         // En Java 11, dentro de la clase Files, añadireon POR FIN!!!, ALELUYA!!!,
         // un método que nos permite leer un fichero de texto
         try{
+            /*
             URL recurso=PalabrasSimilares.class.getClassLoader().getResource("diccionario.ES.txt");
             if(recurso == null) {
                 System.out.println("Diccionario no encontrado");
                 System.exit(1);
             }
-            return Files.readString(Path.of(recurso.toURI()))
+
+            return Files.readString(Path.of(recurso.toURI()))*/
+            return Files.readString(Path.of("/home/ubuntu/environment/spark/src/main/resources/diccionario.ES.txt"))
                     .lines()
                     .filter( linea -> ! linea.isBlank()) // ME quedo con la linea si tiene algo
                     .filter( linea -> linea.contains("=")) // Me quedo con la linea si contiene un =
@@ -77,8 +80,8 @@ public class PalabrasSimilares {
             System.out.println("Error al leer el fichero");
             io.printStackTrace();
             System.exit(1);
-        } catch (URISyntaxException e) {
-            throw new RuntimeException(e);
+        //} catch (URISyntaxException e) {
+        //    throw new RuntimeException(e);
         }
         return null;
     }

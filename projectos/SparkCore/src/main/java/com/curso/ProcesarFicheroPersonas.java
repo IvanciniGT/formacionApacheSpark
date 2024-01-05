@@ -11,14 +11,15 @@ import static org.apache.spark.sql.functions.udf;
 
 public class ProcesarFicheroPersonas {
 
-    private static final boolean guardarEnDisco = true;
+    private static final boolean developmentMode = true;
 
     public static void main(String[] args){
         // PASO 1: Abrir la conexión con el cluster de Spark
-        SparkSession conexion = SparkSession.builder()
-                .appName("Procesar fichero Personas")
-                //.master("local[2]")
-                .getOrCreate();
+        var builder = SparkSession.builder()
+                .appName("Procesar fichero Personas");
+        if(developmentMode)
+            builder.master("local[2]");
+        SparkSession conexion = builder.getOrCreate();
 
         // PASO 2: Hacernos con los datos, en este caso no usaremos los RDDs, sino los Datasets
         Dataset<Row> datosPersonas = conexion.read()
@@ -52,12 +53,20 @@ public class ProcesarFicheroPersonas {
         guardarDatos(datosFinales, "src/main/resources/datosFinales");
         guardarDatos(cpNoDetectados, "src/main/resources/cpNoDetectados");
 
+        // Sleep de 1 hora para que me de tiempo a ver la interfaz gráfica en desarrollo
+        if(developmentMode)
+            try {
+                Thread.sleep(60*60*1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
         // PASO 5: cerrar la conexión
         conexion.close();
     }
     private static void guardarDatos(Dataset<Row> datos, String ruta) {
         System.out.println("Guardando datos en " + ruta);
-        if(guardarEnDisco) {
+        if(!developmentMode) {
             datos.write()
                     .mode("overwrite")
                     .parquet(ruta);

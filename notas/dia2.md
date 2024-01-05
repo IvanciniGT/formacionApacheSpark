@@ -331,7 +331,7 @@ Qué formato elegiríais para guardar el DNI en una BBDD o en un fichero?
     En 1 bytes cuantos números puedo guardar? 256
     En 2 bytes? 65536
     En 3 bytes? 16777216
-    En4 bytes? 4294967296
+    En 4 bytes? 4294967296
 
     Como número, el DNI ocupa un 45% menos que como texto.
     Si tengo 10M de DNIs... y los guardo como texto... ocupo 90M de espacio en disco.
@@ -343,6 +343,68 @@ Qué formato elegiríais para guardar el DNI en una BBDD o en un fichero?
         - Necesitaré el doble de tiempo para trasmitir los datos por red...
     Mi programa va a ir lento de cojones!
 
-    De hecho, éste es el motivo por el que en entornos BIGDATA no usamos ficheros CSV, JSON, TXT
-    sino archivos AVRO o PARQUET 
+    De hecho, éste es el motivo por el que en entornos BIGDATA no usamos ficheros CSV, JSON, TXT, XML, YAML
+    sino archivos AVRO o PARQUET.
+
+    En los formatos de texto plano: CSV, JSON... la información se almacena como texto:
+    - Número: No se guarda el número... se guarda una secuencia de caracteres
+    - Booleanos
+    - Fechas
+
+    AVRO y PARQUET son formatos binarios => 
+    - Los números se guardan como una secuencia de bytes... de cuántos bytes? depende de lo grande que pueda ser el número
+    - Las fechas se guardan como una secuencia de bytes
+    - Los booleanos se guardan como 1 byte.
+
+    En AVRO y en PARQUET se almacenan no solamente los datos, sino también el ESQUEMA de los datos.
+
+    Esas dos características los convierten en formatos ideales para entornos bigdata.
+
+    La diferencia entre AVRO y PARQUET es que:
+    AVRO va orientado a filas, mientras que PARQUET va orientado a COLUMNAS... cambia la estructura interna del archivo
+
+    EJEMPLO: Datos de personas
+
+        | id | nombre | apellidos | dni | fechaNacimiento | sexo | nacionalidad |
+        |----|--------|-----------|-----|-----------------|------|--------------|
+        | 1  | Pepe   | Pérez     | 1   | 1-7-1990        | V    | 1            |
+        | 2  | Juan   | Pérez     | 2   | 2-8-2000        | V    | 2            |
+        | 3  | María  | Pérez     | 3   | 3-9-2010        | M    | 3            |
+
+        AVRO:
+        ---
+        | id | nombre | apellidos | dni | fechaNacimiento | sexo | nacionalidad | <- Estructura / Esquema
+        |----|--------|-----------|-----|-----------------|------|--------------|
+        | 1  | Pepe   | Pérez     | 1   | 1-7-1990        | V    | 1            |
+        ---
+        | id | nombre | apellidos | dni | fechaNacimiento | sexo | nacionalidad |
+        |----|--------|-----------|-----|-----------------|------|--------------|
+        | 2  | Juan   | Pérez     | 2   | 2-8-2000        | V    | 2            |
+        ---
+        | id | nombre | apellidos | dni | fechaNacimiento | sexo | nacionalidad |
+        |----|--------|-----------|-----|-----------------|------|--------------|
+        | 3  | María  | Pérez     | 3   | 3-9-2010        | M    | 3            |
+
+        PARQUET:
+        -------
+        | id | nombre | apellidos | dni | fechaNacimiento | sexo | nacionalidad | <- Estructura / Esquema
+        |id| 1 | 2 | 3 |
+        |nombre| Pepe | Juan | María |
+        |apellidos| Pérez | Pérez | Pérez |
+        |fechaNacimiento| 1-7-1990 | 2-8-2000 | 3-9-2010 |
+        |sexo| V | V | M |
+        |nacionalidad| 1 | 2 | 3 |
+
+Parquet es un formato ideal para trabajar con grandes volúmenes de datos... que quiero procesar secuencialmente:
+- Quiero leer todos los id, nombre, DNIs
+Es el formato más habitual en el banco para almacenar datos después de su procesamiento en Spark
+
+AVRO es un formato ideal cuando voy a leer datos de forma aleatoria:
+
+    TWEETER (X)
+                            AVRO
+        App móvil            v
+            ---> tweet1 --> Kafka <--- Programa Spark que extrae los hashtags ---> PARQUET
+                                  <--- Programa que identifica las menciones
+                                  <--- ....
 

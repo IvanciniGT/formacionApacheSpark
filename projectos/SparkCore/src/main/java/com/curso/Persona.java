@@ -47,6 +47,18 @@ public class Persona {
         }
     }
 
+    public static boolean validarDNI(String dni){
+        dni = dni.toUpperCase();
+        var dniValido = dni.matches("^(([0-9]{1,8})|((([0-9]{1,2}[.][0-9]{3})|([0-9]{1,3}))[.][0-9]{3}))[ -]?[A-Z]$");
+        if(dniValido) {
+            dni = dni.replaceAll("[. -]","");
+            var numeroDni = Integer.parseInt(dni.substring(0, dni.length() - 1));
+            var letraDni = dni.substring(dni.length() - 1);
+            dniValido = LETRAS_DNI.charAt(numeroDni % 23) == letraDni.charAt(0);
+        }
+        return dniValido;
+    }
+
     public Optional<String> normalizarDni(boolean puntosDeMiles, boolean cerosIzquierda, String separadorLetra){
         if(!dniValido){
             return Optional.empty();

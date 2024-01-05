@@ -52,6 +52,11 @@ Leer fichero de personas
  Las que no sean mayores de edad pero tengan un DNI correcto a otro fichero parquet
  Las que si sean buenas ***:
     Leo el fichero de códigos postales
+        ES UN CSV
+            conexion.read()
+                    .option("sep", ";")
+                    .option("header", "true")
+                    .csv("path")
     Y añado la información de este fichero a cada persona
         Y guardo el resultado en un fichero parquet
         Siempre y cuando la persona tenga un cp que exista en mi fichero de códigos postales

@@ -61,3 +61,9 @@ Leer fichero de personas
         Y guardo el resultado en un fichero parquet
         Siempre y cuando la persona tenga un cp que exista en mi fichero de códigos postales
             Si no... a otro fichero parquet
+
+La idea es que tendremos 2 datasets:
+    - Personas con DNI correcto y mayores de edad
+    - CPs
+
+Y quiero hacer un JOIN de esos datasets (igual que si fueran tablas de una BBDD relacional)

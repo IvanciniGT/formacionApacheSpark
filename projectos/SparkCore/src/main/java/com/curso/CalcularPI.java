@@ -20,7 +20,7 @@ public class CalcularPI {
         // que incluye configuración de la conexión al cluster
         final SparkConf configuracionDeLaConexion = new SparkConf();
         configuracionDeLaConexion.setAppName("Calculador de PI");  // Identifica mi aplicación dentro de un cluster de Spark
-        configuracionDeLaConexion.setMaster("local[2]"); // A qué cluster nos conectamos
+        //configuracionDeLaConexion.setMaster("local[2]"); // A qué cluster nos conectamos
                                                     // Aqui pondremos la dirección de un cluster... habitualmente de la forma: "spark://IP:7077"
                                                     // TRUCO: En desarrollo, si ponemos "local" Spark crea un cluster en local para pruebas,
                                                     // Que arranca cada vez que ejecuto mi programa, automáticamente

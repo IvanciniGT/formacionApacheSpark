@@ -13,6 +13,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class ContarHashtags {
 
@@ -84,7 +85,7 @@ public class ContarHashtags {
                     .lines()
                     .filter( linea -> ! linea.isBlank())
                     .filter( linea -> linea.contains("#"))
-                    .toList();
+                    .collect(Collectors.toList());
         }catch(IOException io){
             System.out.println("Error al leer el fichero");
             io.printStackTrace();

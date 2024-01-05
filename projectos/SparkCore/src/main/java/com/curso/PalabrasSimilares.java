@@ -70,7 +70,9 @@ public class PalabrasSimilares {
                     .filter( linea -> ! linea.isBlank()) // ME quedo con la linea si tiene algo
                     .filter( linea -> linea.contains("=")) // Me quedo con la linea si contiene un =
                     .map(    linea -> linea.split("=")[0].toLowerCase())
-                    .toList();
+                    .collect(Collectors.toList());
+
+                    //.toList();
         }catch(IOException io){
             System.out.println("Error al leer el fichero");
             io.printStackTrace();

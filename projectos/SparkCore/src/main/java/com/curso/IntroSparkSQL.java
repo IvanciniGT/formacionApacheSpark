@@ -16,7 +16,7 @@ public class IntroSparkSQL {
         // PASO 1: Abrir la conexión con el cluster de Spark
         SparkSession conexion = SparkSession.builder()
                 .appName("Introducción a Spark SQL")
-                .master("local[2]")
+                //.master("local[2]")
                 .getOrCreate();
 
         // PASO 2: Hacernos con los datos, en este caso no usaremos los RDDs, sino los Datasets

@@ -25,7 +25,7 @@ public class ContarHashtags {
         // PASO 1: Abrir conexión con Spark
         final SparkConf configuracionDeLaConexion = new SparkConf();
         configuracionDeLaConexion.setAppName("Palabras similares");
-        configuracionDeLaConexion.setMaster("local[2]");
+        //configuracionDeLaConexion.setMaster("local[2]");
         JavaSparkContext conexion = new JavaSparkContext(configuracionDeLaConexion);
 
         // PASO 2: Convertir mis datos en un objeto de tipo RDD (el equivalente en Spark a los Stream de Java
